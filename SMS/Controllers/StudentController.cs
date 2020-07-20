@@ -49,8 +49,8 @@ namespace SMS.Controllers
         {
 
             Thread.Sleep(3000);
-            //var result =  _studentService.FetchStudentdetails(paramData);
-            var result = _studentService.FetchStudentdetailsV2(paramData);
+            var result =  _studentService.FetchStudentdetails(paramData);
+            //var result = _studentService.FetchStudentdetailsV2(paramData); -- use this method to get the same result
 
             if (result == null || result.Count <= 0)
                 return Request.CreateResponse(HttpStatusCode.NotFound);
