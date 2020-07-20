@@ -1,0 +1,128 @@
+﻿@model SMS.Models.StudentDetailsViewModel
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+    #tblCustomers th, td {
+        white-space: nowrap;
+    }
+    .row{
+        margin:3px 3px 3px 3px;
+    }
+    .table {
+        width: 100%;
+        margin: 3px 3px 3px 3px;
+        border-collapse: collapse;
+    }
+    .overlay {
+        position: fixed; /* Sit on top of the page content */
+        display: none; /* Hidden by default */
+        width: 100%; /* Full width (cover the whole page) */
+        height: 100%; /* Full height (cover the whole page) */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+        z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+        cursor: pointer; /* Add a pointer on hover */
+    }
+
+    .OverlayText {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 30px;
+        font-stretch:wider;
+        color: yellow;
+        transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+    }
+</style>
+
+<div class="row" style="margin:10px 10px 10px 10px; text-align:center;vertical-align:top;">
+    <h1>Student Management system</h1>
+
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <label for="Student" style="color:black">Select student</label> @Html.DropDownListFor(m => m.Selectedstudent, Model.Students, new { @id = "StudentListBox" })
+    </div>
+    <div class="col-md-4">
+        <label for="Service" style="color:black">Select Service</label> @Html.DropDownListFor(m => m.SelectedServices, Model.Services, new { @id = "ServiceListBox" })
+    </div>
+    <div class="col-md-4">
+        <label for="Enrollment" style="color:black">Select Enrollment</label> @Html.DropDownListFor(m => m.SelectedEnrollment, Model.Enrollments, new { @id = "EnrollmentListBox" })
+    </div>
+    <div class="col-md-5">
+        <button type="button" id="UpdateButton" class="btn btn-primary"><i class="fa fa-check-circle">&nbsp;</i>Refresh</button>
+    </div>
+    </div>
+<div class="panel">
+    <table id="tblCustomers" class="table table-bordered table-striped" cellpadding="0" cellspacing="0" border="1">
+        <thead>
+            <tr>
+                <th class="text-center">Name</th>
+                <th class="text-center">DOB</th>
+                <th class="text-center">Service</th>
+                <th class="text-center">Enrollment Year</th>
+                <th class="text-center">From</th>
+                <th class="text-center">To</th>
+                
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div id="wait" class="overlay"><div class="OverlayText">Please wait...</div></div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        FilterDatGrid();
+        $('#UpdateButton').click(function () {
+            FilterDatGrid();
+        });
+    });
+    function FilterDatGrid() {
+        debugger;
+        document.getElementById("wait").style.display = "block";
+        var obj = {};
+
+        
+        obj.EnrollmentId = $('#EnrollmentListBox').val();
+        obj.ServiceId = $('#ServiceListBox').val();
+        obj.StudentId = $('#StudentListBox').val();
+        var parameterData = JSON.stringify(obj);
+
+        $.post("/SMS/Home/GetAllStudentList", { paramData: parameterData }, function (data) {
+            debugger;
+            $("#tblCustomers").DataTable(
+           {
+               "destroy": true,
+                lengthMenu: [[5, 10, -1], [5, 10, "All"]],
+                bPaginate: true,
+                data: data,
+                searching: false,
+                columns: [
+                          { 'data': 'FullName' },
+                          { 'data': 'DateOfBirth' },
+                          { 'data': 'ServiceName' },
+                          { 'data': 'EnrollmentYear' },
+                          { 'data': 'Startdate' },
+                          { 'data': 'EndDate' },
+                          
+                         ],
+                "language": {
+                              "emptyTable": "No records found"
+                          }
+           });
+
+
+            document.getElementById("wait").style.display = "none";
+        });
+
+
+      
+    }
+</script>
